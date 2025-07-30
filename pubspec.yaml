@@ -11,30 +11,37 @@ dependencies:
   flutter:
     sdk: flutter
 
+  flutter_localizations:
+    sdk: flutter
+  intl: ^0.20.0
+
   shared_preferences: ^2.0.15
   flutter_animate: ^4.1.0
-  google_fonts: ^4.0.4
+  # Updated from 4.0.5 to 6.2.1
+  google_fonts: ^6.2.1
   cupertino_icons: ^1.0.8
   flutter_svg: ^2.0.5
   provider: ^6.0.3
+  # Kept as-is, since it wasn't in the outdated list
   table_calendar: ^3.2.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_launcher_icons: ^0.13.1
-  flutter_lints: ^5.0.0
+  # Updated from 0.13.1 to 0.14.4
+  flutter_launcher_icons: ^0.14.4
+  # Updated from 5.0.0 to 6.0.0
+  flutter_lints: ^6.0.0
 
 flutter:
-  # This is the new, required flag for code generation.
   generate: true
-
   uses-material-design: true
 
   assets:
     - assets/icons/
+
 flutter_launcher_icons:
   android: "launcher_icon"
   ios: true
   image_path: "assets/icon/launcher_icon.png"
-  min_sdk_android: 21 # Recommended for most modern apps
+  min_sdk_android: 21

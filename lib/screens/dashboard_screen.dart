@@ -2,9 +2,9 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import '../l10n/app_localizations.dart'; // Import
 
 class DashboardScreen extends StatelessWidget {
-  // CHANGE: Made streakCount nullable to support Hard Mode properly
   final int? streakCount;
   final VoidCallback onYes;
   final VoidCallback onSlipUp;
@@ -20,6 +20,7 @@ class DashboardScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!; // Get localizations
     final colorScheme = Theme.of(context).colorScheme;
     final isDark = Theme.of(context).brightness == Brightness.dark;
     return Scaffold(
@@ -40,7 +41,6 @@ class DashboardScreen extends StatelessWidget {
                     ),
                   ],
                   child: Text(
-                    // CHANGE: Handle the null case for Hard Mode
                     streakCount?.toString() ?? '—',
                     style: TextStyle(
                       fontSize: 120,
@@ -52,7 +52,7 @@ class DashboardScreen extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  'Days Sugar-Free',
+                  l10n.daysSugarFree, // Localized
                   style: TextStyle(
                     fontSize: 24,
                     fontWeight: FontWeight.w300,
@@ -61,7 +61,7 @@ class DashboardScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 100),
                 Text(
-                  'Did you stay sugar-free today?',
+                  l10n.didYouStaySugarFreeToday, // Localized
                   style: TextStyle(
                     fontSize: 18,
                     color: colorScheme.onSurface,
@@ -91,14 +91,14 @@ class DashboardScreen extends StatelessWidget {
                         ),
                   child: Text(
                     isTodaySuccessful
-                        ? 'SUCCESS RECORDED ✓'
-                        : 'YES, I WAS SUCCESSFUL',
+                        ? l10n.successRecorded // Localized
+                        : l10n.yesIWasSuccessful, // Localized
                     style: const TextStyle(
                         fontSize: 18, fontWeight: FontWeight.bold),
                   ),
                 ),
                 const SizedBox(height: 15),
-                if (isTodaySuccessful)
+                if (!isTodaySuccessful)
                   OutlinedButton(
                     onPressed: onSlipUp,
                     style: OutlinedButton.styleFrom(
@@ -111,7 +111,7 @@ class DashboardScreen extends StatelessWidget {
                       ),
                     ),
                     child: Text(
-                      'I had a slip-up',
+                      l10n.iHadASlipUp, // Localized
                       style: TextStyle(
                           fontSize: 18,
                           color: isDark ? Colors.grey[300] : Colors.grey[700]),

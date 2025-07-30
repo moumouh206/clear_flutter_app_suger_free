@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
+import '../l10n/app_localizations.dart'; // Import
 
 class HistoryScreen extends StatefulWidget {
   final Set<DateTime> successfulDays;
@@ -23,19 +24,22 @@ class _HistoryScreenState extends State<HistoryScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // --- Define our accent color once for easy reuse ---
+    final l10n = AppLocalizations.of(context)!; // Get localizations
     const accentColor = Color(0xFF5EA500);
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Your History'),
+        title: Text(l10n.yourHistory), // Localized
       ),
       body: Column(
         children: [
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 8.0),
             child: TableCalendar(
+              // The locale of the calendar will be automatically handled
+              // by the MaterialApp's locale setting.
+              locale: Localizations.localeOf(context).languageCode,
               firstDay: DateTime.utc(2020, 1, 1),
               lastDay: DateTime.now().add(const Duration(days: 1)),
               focusedDay: _focusedDay,
@@ -50,65 +54,46 @@ class _HistoryScreenState extends State<HistoryScreen> {
                   _focusedDay = focusedDay;
                 });
               },
-
-              // --- NEW: STYLING OPTIONS ---
-
-              // 1. Style for the day the user taps on (the "selected" day)
               calendarStyle: CalendarStyle(
                 selectedDecoration: BoxDecoration(
-                  color: accentColor
-                      .withOpacity(0.5), // A semi-transparent accent color
+                  color: accentColor.withOpacity(0.5),
                   shape: BoxShape.circle,
                 ),
-                // Style for dates outside the current month (e.g., in the empty space)
                 outsideDaysVisible: false,
               ),
-
-              // 2. Custom builders for specific days (TODAY and SUCCESSFUL days)
               calendarBuilders: CalendarBuilders(
-                // --- Builder for TODAY'S date ---
                 todayBuilder: (context, day, focusedDay) {
-                  // This widget is used specifically for the current day's cell.
                   return Container(
                     margin: const EdgeInsets.all(6.0),
                     decoration: BoxDecoration(
-                      // An outline using our accent color to highlight today.
                       border: Border.all(color: accentColor, width: 2.0),
                       shape: BoxShape.circle,
                     ),
                     child: Center(
                       child: Text(
                         '${day.day}',
-                        // Make the text color match the accent color.
                         style: TextStyle(color: accentColor),
                       ),
                     ),
                   );
                 },
-
-                // --- Builder for MARKED (successful) days ---
                 markerBuilder: (context, day, events) {
                   final isSuccessful =
                       widget.successfulDays.contains(_normalizeDate(day));
                   if (isSuccessful) {
-                    // This will draw a solid circle inside the day's cell.
                     return Center(
                       child: Container(
-                        // This container is the visual representation of a successful day.
                         width: 38,
                         height: 38,
                         decoration: BoxDecoration(
-                          color: accentColor
-                              .withOpacity(0.9), // Solid accent color
+                          color: accentColor.withOpacity(0.9),
                           shape: BoxShape.circle,
                         ),
                         child: Center(
                           child: Text(
                             '${day.day}',
                             style: TextStyle(
-                              color: isDark
-                                  ? Colors.black
-                                  : Colors.white, // Contrasting text color
+                              color: isDark ? Colors.black : Colors.white,
                             ),
                           ),
                         ),
@@ -124,13 +109,13 @@ class _HistoryScreenState extends State<HistoryScreen> {
               ),
             ),
           ),
-          const Spacer(), // Pushes the text to the bottom
-          const Padding(
-            padding: EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 32.0),
+          const Spacer(),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 32.0),
             child: Text(
-              "Tap any day to mark it as sugar-free or to remove it.",
+              l10n.tapDayToToggle, // Localized
               textAlign: TextAlign.center,
-              style: TextStyle(color: Colors.grey),
+              style: const TextStyle(color: Colors.grey),
             ),
           ),
         ],
@@ -138,7 +123,6 @@ class _HistoryScreenState extends State<HistoryScreen> {
     );
   }
 
-  // Helper functions that should be inside the State class
   DateTime _normalizeDate(DateTime date) {
     return DateTime(date.year, date.month, date.day);
   }

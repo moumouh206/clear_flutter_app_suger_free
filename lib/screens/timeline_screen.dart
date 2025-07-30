@@ -3,10 +3,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_animate/flutter_animate.dart';
-import '../models/milestone.dart'; // Make sure this path is correct
+import '../l10n/app_localizations.dart'; // Import
+import '../models/milestone.dart';
 
 class TimelineScreen extends StatelessWidget {
-  // We ONLY need the current streak now.
   final int currentStreak;
 
   const TimelineScreen({
@@ -16,15 +16,15 @@ class TimelineScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // --- Getting theme data ---
+    final l10n = AppLocalizations.of(context)!;
     final colorScheme = Theme.of(context).colorScheme;
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    // --- UPDATED: Get localized milestones ---
+    final allMilestones = getLocalizedMilestones(context);
 
     return Scaffold(
-      // The background color will now be handled by the MaterialApp theme
       appBar: AppBar(
-        // The AppBar theme is also handled by MaterialApp now
-        title: const Text('Your Journey'),
+        title: Text(l10n.yourJourney), // Localized
         centerTitle: true,
       ),
       body: ListView.builder(
@@ -32,28 +32,27 @@ class TimelineScreen extends StatelessWidget {
         itemCount: allMilestones.length,
         itemBuilder: (context, index) {
           final milestone = allMilestones[index];
-
-          // --- SIMPLIFIED AND CORRECTED LOGIC ---
-          // A milestone is unlocked if the user's streak meets or exceeds its day requirement.
-          // This removes all the old bugs related to hourly checks.
           final isUnlocked = currentStreak >= milestone.day;
 
+          // Pass l10n to the build method
           return _buildMilestoneCard(
-              context, milestone, isUnlocked, colorScheme, isDark);
+              context, milestone, isUnlocked, colorScheme, isDark, l10n);
         },
       ),
     );
   }
 
-  // I've kept your excellent theme-aware card building logic.
-  Widget _buildMilestoneCard(BuildContext context, Milestone milestone,
-      bool isUnlocked, ColorScheme colorScheme, bool isDark) {
-    // Using your custom accent color
+  Widget _buildMilestoneCard(
+      BuildContext context,
+      Milestone milestone,
+      bool isUnlocked,
+      ColorScheme colorScheme,
+      bool isDark,
+      AppLocalizations l10n) {
     const accentColor = Color(0xFF5EA500);
 
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-      // Your dark/light mode card color logic is great.
       color: isUnlocked
           ? (isDark ? colorScheme.surfaceVariant : Colors.white)
           : (isDark ? colorScheme.surface : Theme.of(context).cardColor),
@@ -69,11 +68,8 @@ class TimelineScreen extends StatelessWidget {
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Assuming you are using SVGs for icons, this needs to be updated.
-                // If you are still using IconData, this is fine.
                 SvgPicture.asset(
-                  milestone
-                      .icon, // This is now the String path e.g., 'assets/icons/star.svg'
+                  milestone.icon,
                   width: 36,
                   height: 36,
                   colorFilter: ColorFilter.mode(
@@ -102,7 +98,7 @@ class TimelineScreen extends StatelessWidget {
                         Padding(
                           padding: const EdgeInsets.only(top: 4.0),
                           child: Text(
-                            'Locked',
+                            l10n.locked, // Localized
                             style: TextStyle(
                               color:
                                   isDark ? Colors.grey[500] : Colors.grey[600],

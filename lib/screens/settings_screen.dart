@@ -1,32 +1,31 @@
 // lib/screens/settings_screen.dart
 
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart'; // We'll add this package next
+import 'package:provider/provider.dart';
+import '../l10n/app_localizations.dart'; // Import
 import '../services/settings_service.dart';
 
 class SettingsScreen extends StatelessWidget {
-  // A function to call when the user wants to reset everything
   final VoidCallback onFullReset;
 
   const SettingsScreen({super.key, required this.onFullReset});
 
   @override
   Widget build(BuildContext context) {
-    // 'Consumer' is a widget that listens to a Provider for changes
+    final l10n = AppLocalizations.of(context)!;
     return Consumer<SettingsService>(
       builder: (context, settings, child) {
         return Scaffold(
           appBar: AppBar(
-            title: const Text('Settings'),
+            title: Text(l10n.settings), // Localized
             backgroundColor: Theme.of(context).scaffoldBackgroundColor,
             elevation: 0,
           ),
           body: ListView(
             children: [
-              // --- Appearance Section ---
-              const _SectionHeader(title: 'APPEARANCE'),
+              _SectionHeader(title: l10n.appearance), // Localized
               SwitchListTile(
-                title: const Text('Dark Mode'),
+                title: Text(l10n.darkMode), // Localized
                 secondary: const Icon(Icons.dark_mode_outlined),
                 value: settings.isDarkMode,
                 activeColor: const Color(0xFF5EA500),
@@ -34,12 +33,31 @@ class SettingsScreen extends StatelessWidget {
                   settings.updateDarkMode(value);
                 },
               ),
+              // --- NEW: Language Selector ---
+              ListTile(
+                leading: const Icon(Icons.language_outlined),
+                title: Text(l10n.language),
+                trailing: DropdownButton<Locale>(
+                  value: settings.locale,
+                  underline: const SizedBox(),
+                  items: AppLocalizations.supportedLocales.map((locale) {
+                    return DropdownMenuItem<Locale>(
+                      value: locale,
+                      child: Text(locale.languageCode.toUpperCase()),
+                    );
+                  }).toList(),
+                  onChanged: (locale) {
+                    if (locale != null) {
+                      context.read<SettingsService>().updateLocale(locale);
+                    }
+                  },
+                ),
+              ),
 
-              // --- Challenge Section ---
-              const _SectionHeader(title: 'CHALLENGE'),
+              _SectionHeader(title: l10n.challenge), // Localized
               SwitchListTile(
-                title: const Text('Hard Mode'),
-                subtitle: const Text('Hides your streak counter.'),
+                title: Text(l10n.hardMode), // Localized
+                subtitle: Text(l10n.hardModeSubtitle), // Localized
                 secondary: const Icon(Icons.local_fire_department_outlined),
                 value: settings.isHardMode,
                 activeColor: const Color(0xFF5EA500),
@@ -48,14 +66,12 @@ class SettingsScreen extends StatelessWidget {
                 },
               ),
 
-              // --- Data Section ---
-              const _SectionHeader(title: 'DATA'),
+              _SectionHeader(title: l10n.data), // Localized
               ListTile(
                 leading: const Icon(Icons.delete_forever_outlined),
-                title: const Text('Reset All Data'),
-                subtitle: const Text(
-                    'This will permanently delete your streak and settings.'),
-                onTap: () => _showResetConfirmationDialog(context),
+                title: Text(l10n.resetAllData), // Localized
+                subtitle: Text(l10n.resetAllDataSubtitle), // Localized
+                onTap: () => _showResetConfirmationDialog(context, l10n),
               ),
             ],
           ),
@@ -64,27 +80,27 @@ class SettingsScreen extends StatelessWidget {
     );
   }
 
-  // Helper method to show a confirmation dialog before deleting data
-  void _showResetConfirmationDialog(BuildContext context) {
+  void _showResetConfirmationDialog(
+      BuildContext context, AppLocalizations l10n) {
     showDialog(
       context: context,
       builder: (BuildContext dialogContext) {
         return AlertDialog(
-          title: const Text('Are you sure?'),
-          content: const Text('This action cannot be undone.'),
+          title: Text(l10n.areYouSure), // Localized
+          content: Text(l10n.actionCannotBeUndone), // Localized
           actions: <Widget>[
             TextButton(
-              child: const Text('Cancel'),
+              child: Text(l10n.cancel), // Localized
               onPressed: () {
                 Navigator.of(dialogContext).pop();
               },
             ),
             TextButton(
               style: TextButton.styleFrom(foregroundColor: Colors.pink),
-              child: const Text('RESET'),
+              child: Text(l10n.reset), // Localized
               onPressed: () {
-                Navigator.of(dialogContext).pop(); // Close the dialog
-                onFullReset(); // Call the reset function
+                Navigator.of(dialogContext).pop();
+                onFullReset();
               },
             ),
           ],
@@ -94,7 +110,6 @@ class SettingsScreen extends StatelessWidget {
   }
 }
 
-// A simple private widget for the section headers
 class _SectionHeader extends StatelessWidget {
   final String title;
   const _SectionHeader({required this.title});
